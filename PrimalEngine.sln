@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimalEditor", "PrimalEditor\PrimalEditor.csproj", "{D7A37D75-948F-419D-B6E1-66935F081BE2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimalEditor", "PrimalEditor\PrimalEditor.csproj", "{DAFA724F-6D9B-4605-A63B-7EF62AC700EA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PrimalEngine", "PrimalEngine\PrimalEngine.vcxproj", "{764100D3-2B4A-4DDA-B3BB-BEB73D2EDE66}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PrimalEngine", "PrimalEngine\PrimalEngine.vcxproj", "{515DAAAC-C2F5-4361-B5BE-FEB666AAFE3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -10,11 +10,11 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D7A37D75-948F-419D-B6E1-66935F081BE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D7A37D75-948F-419D-B6E1-66935F081BE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D7A37D75-948F-419D-B6E1-66935F081BE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D7A37D75-948F-419D-B6E1-66935F081BE2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{764100D3-2B4A-4DDA-B3BB-BEB73D2EDE66}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{764100D3-2B4A-4DDA-B3BB-BEB73D2EDE66}.Debug|Any CPU.Build.0 = Debug|x64
+		{DAFA724F-6D9B-4605-A63B-7EF62AC700EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAFA724F-6D9B-4605-A63B-7EF62AC700EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAFA724F-6D9B-4605-A63B-7EF62AC700EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAFA724F-6D9B-4605-A63B-7EF62AC700EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{515DAAAC-C2F5-4361-B5BE-FEB666AAFE3E}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{515DAAAC-C2F5-4361-B5BE-FEB666AAFE3E}.Debug|Any CPU.Build.0 = Debug|x64
 	EndGlobalSection
 EndGlobal

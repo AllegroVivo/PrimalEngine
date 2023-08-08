@@ -12,38 +12,34 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+
 using PrimalEditor.GameProject;
 
-namespace PrimalEditor
+namespace PrimalEditor;
+
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-            Loaded += OnMainWindowLoaded;
-        }
+        InitializeComponent();
+        Loaded += OnMainWindowLoaded;
+    }
 
-        private void OnMainWindowLoaded(Object sender, RoutedEventArgs e)
-        {
-            Loaded -= OnMainWindowLoaded;
-            OpenProjectBrowserDialog();
-        }
+    private void OnMainWindowLoaded(Object sender, RoutedEventArgs e)
+    {
+        Loaded -= OnMainWindowLoaded;
+        OpenProjectBrowserDialog();
+    }
 
-        private void OpenProjectBrowserDialog()
+    private void OpenProjectBrowserDialog()
+    {
+        ProjectBrowserDialog projectBrowser = new();
+        if (projectBrowser.ShowDialog() == false)
         {
-            ProjectBrowserDialog projectBrowser = new();
-            if (projectBrowser.ShowDialog() == false)
-            {
-                Application.Current.Shutdown();
-            }
-            else
-            {
-                
-            }
+            Application.Current.Shutdown();
+        }
+        else
+        {
         }
     }
 }
