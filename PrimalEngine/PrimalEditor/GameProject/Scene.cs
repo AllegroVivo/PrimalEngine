@@ -26,6 +26,22 @@ public class Scene : ViewModelBase
     [DataMember]
     public Project Project { get; private set; }
 
+    private Boolean _isActive;
+
+    [DataMember]
+    public Boolean IsActive
+    {
+        get => _isActive;
+        set
+        {
+            if (_isActive != value)
+            {
+                _isActive = value;
+                OnPropertyChanged(nameof(IsActive));
+            }
+        }
+    }
+
     public Scene(Project project, String name)
     {
         Debug.Assert(project != null);

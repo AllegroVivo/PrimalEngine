@@ -8,6 +8,7 @@
         <Scene z:Id="i2">
             <Name>Default Scene</Name>
             <Project z:Ref="i1"/>
+            <IsActive>true</IsActive>
         </Scene>
     </Scenes>
 </Game>

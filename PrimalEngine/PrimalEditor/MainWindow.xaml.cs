@@ -25,6 +25,7 @@ namespace PrimalEditor
         {
             InitializeComponent();
             Loaded += OnMainWindowLoaded;
+            Closed += OnMainWindowClosed;
         }
 
         private void OnMainWindowLoaded(Object sender, RoutedEventArgs e)
@@ -36,8 +37,21 @@ namespace PrimalEditor
         private void OpenProjectBrowserDialog()
         {
             ProjectBrowserDialog projectBrowser = new();
-            if (projectBrowser.ShowDialog() == false)
+            if (projectBrowser.ShowDialog() == false || projectBrowser.DataContext == null)
+            {
                 Application.Current.Shutdown();
+            }
+            else
+            {
+                Project.Current?.Unload();
+                DataContext = projectBrowser.DataContext;
+            }
+        }
+
+        private void OnMainWindowClosed(Object sender, EventArgs e)
+        {
+            Closed -= OnMainWindowClosed;
+            Project.Current?.Unload();
         }
     }
 }
