@@ -10,6 +10,13 @@ public partial class OpenProjectView : UserControl
     public OpenProjectView()
     {
         InitializeComponent();
+
+        Loaded += (s, e) =>
+        {
+            var item = projectsListBox.ItemContainerGenerator
+                .ContainerFromIndex(projectsListBox.SelectedIndex) as ListBoxItem;
+            item?.Focus();
+        };
     }
 
     private void OnOpenButton_Click(Object sender, RoutedEventArgs e)
@@ -24,6 +31,7 @@ public partial class OpenProjectView : UserControl
 
         Boolean dialogResult = project != null;
         win!.DialogResult = dialogResult;
+        win.DataContext = project;
         win.Close();
     }
 

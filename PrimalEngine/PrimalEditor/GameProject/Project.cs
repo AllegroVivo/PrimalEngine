@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Windows;
+using System.Windows.Input;
 using PrimalEditor.Utilities;
 
 namespace PrimalEditor.GameProject;
@@ -21,8 +22,15 @@ public class Project : ViewModelBase
 
     public static Project Current => Application.Current.MainWindow?.DataContext as Project;
 
+    public static UndoRedo UndoRedo { get; } = new();
+
     [DataMember(Name = "Scenes")] private ObservableCollection<Scene> _scenes = new();
     public ReadOnlyObservableCollection<Scene> Scenes { get; private set; }
+    
+    public ICommand AddScene { get; private set; }
+    public ICommand RemoveScene { get; private set; }
+    public ICommand UndoAction { get; private set; }
+    public ICommand RedoAction { get; private set; }
     
     private Scene _activeScene;
     
@@ -49,6 +57,31 @@ public class Project : ViewModelBase
         }
 
         ActiveScene = Scenes.FirstOrDefault(x => x.IsActive);
+
+        AddScene = new RelayCommand<Object>(x =>
+        {
+            AddSceneInternal($"New Scene {_scenes.Count}");
+            Scene newScene = _scenes.Last();
+            Int32 sceneIndex = _scenes.Count - 1;
+            
+            UndoRedo.Add(new UndoRedoAction(
+                () => RemoveSceneInternal(newScene),
+                () => _scenes.Insert(sceneIndex, newScene),
+                $"Add {newScene.Name}"));
+        });
+        RemoveScene = new RelayCommand<Scene>(x =>
+        {
+            Int32 sceneIndex = _scenes.IndexOf(x);
+            RemoveSceneInternal(x);
+
+            UndoRedo.Add(new UndoRedoAction(
+                () => _scenes.Insert(sceneIndex, x),
+                () => RemoveSceneInternal(x),
+                $"Remove {x.Name}"));
+        }, x => !x.IsActive);
+
+        UndoAction = new RelayCommand<Object>(_=>UndoRedo.Undo());
+        RedoAction = new RelayCommand<Object>(_=>UndoRedo.Redo());
     }
 
     public Project(String name, String path)
@@ -72,5 +105,17 @@ public class Project : ViewModelBase
     public static void Save(Project project)
     {
         Serializer.ToFile(project, project.FullPath);
+    }
+
+    private void AddSceneInternal(String sceneName)
+    {
+        Debug.Assert(!String.IsNullOrEmpty(sceneName.Trim()));
+        _scenes.Add(new Scene(this, sceneName));
+    }
+
+    private void RemoveSceneInternal(Scene scene)
+    {
+        Debug.Assert(_scenes.Contains(scene));
+        _scenes.Remove(scene);
     }
 }

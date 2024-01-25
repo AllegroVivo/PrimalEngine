@@ -7,7 +7,7 @@ namespace PrimalEditor;
 [DataContract(IsReference = true)]
 public class ViewModelBase : INotifyPropertyChanged
 {
-    public event PropertyChangedEventHandler? PropertyChanged;
+    public event PropertyChangedEventHandler PropertyChanged;
 
     protected void OnPropertyChanged(String propertyName)
     {
