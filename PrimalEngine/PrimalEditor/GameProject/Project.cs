@@ -18,7 +18,7 @@ public class Project : ViewModelBase
     [DataMember] public String Name { get; private set; } = "New Project";
     [DataMember] public String ProjectPath { get; private set; }
 
-    public String FullPath => $"{ProjectPath}{Name}{Extension}";
+    public String FullPath => $@"{ProjectPath}{Name}\{Name}{Extension}";
 
     public static Project Current => Application.Current.MainWindow?.DataContext as Project;
 
@@ -27,10 +27,11 @@ public class Project : ViewModelBase
     [DataMember(Name = "Scenes")] private ObservableCollection<Scene> _scenes = new();
     public ReadOnlyObservableCollection<Scene> Scenes { get; private set; }
     
-    public ICommand AddScene { get; private set; }
-    public ICommand RemoveScene { get; private set; }
-    public ICommand UndoAction { get; private set; }
-    public ICommand RedoAction { get; private set; }
+    public ICommand AddSceneCommand { get; private set; }
+    public ICommand RemoveSceneCommand { get; private set; }
+    public ICommand UndoCommand { get; private set; }
+    public ICommand RedoCommand { get; private set; }
+    public ICommand SaveCommand { get; private set; }
     
     private Scene _activeScene;
     
@@ -58,30 +59,31 @@ public class Project : ViewModelBase
 
         ActiveScene = Scenes.FirstOrDefault(x => x.IsActive);
 
-        AddScene = new RelayCommand<Object>(x =>
+        AddSceneCommand = new RelayCommand<Object>(x =>
         {
-            AddSceneInternal($"New Scene {_scenes.Count}");
+            AddScene($"New Scene {_scenes.Count}");
             Scene newScene = _scenes.Last();
             Int32 sceneIndex = _scenes.Count - 1;
             
             UndoRedo.Add(new UndoRedoAction(
-                () => RemoveSceneInternal(newScene),
+                () => RemoveScene(newScene),
                 () => _scenes.Insert(sceneIndex, newScene),
                 $"Add {newScene.Name}"));
         });
-        RemoveScene = new RelayCommand<Scene>(x =>
+        RemoveSceneCommand = new RelayCommand<Scene>(x =>
         {
             Int32 sceneIndex = _scenes.IndexOf(x);
-            RemoveSceneInternal(x);
+            RemoveScene(x);
 
             UndoRedo.Add(new UndoRedoAction(
                 () => _scenes.Insert(sceneIndex, x),
-                () => RemoveSceneInternal(x),
+                () => RemoveScene(x),
                 $"Remove {x.Name}"));
         }, x => !x.IsActive);
 
-        UndoAction = new RelayCommand<Object>(_=>UndoRedo.Undo());
-        RedoAction = new RelayCommand<Object>(_=>UndoRedo.Redo());
+        UndoCommand = new RelayCommand<Object>(_ => UndoRedo.Undo());
+        RedoCommand = new RelayCommand<Object>(_ => UndoRedo.Redo());
+        SaveCommand = new RelayCommand<Object>(_ => Save(this));
     }
 
     public Project(String name, String path)
@@ -107,13 +109,13 @@ public class Project : ViewModelBase
         Serializer.ToFile(project, project.FullPath);
     }
 
-    private void AddSceneInternal(String sceneName)
+    private void AddScene(String sceneName)
     {
         Debug.Assert(!String.IsNullOrEmpty(sceneName.Trim()));
         _scenes.Add(new Scene(this, sceneName));
     }
 
-    private void RemoveSceneInternal(Scene scene)
+    private void RemoveScene(Scene scene)
     {
         Debug.Assert(_scenes.Contains(scene));
         _scenes.Remove(scene);
