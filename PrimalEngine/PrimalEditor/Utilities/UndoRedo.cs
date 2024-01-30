@@ -35,10 +35,21 @@ public class UndoRedoAction : IUndoRedo
         _undoAction = undoAction;
         _redoAction = redoAction;
     }
+
+    public UndoRedoAction(String property, Object instance, Object undoValue, Object redoValue, String name) :
+        this(
+            ()=> instance.GetType().GetProperty(property).SetValue(instance, undoValue),
+            ()=>instance.GetType().GetProperty(property).SetValue(instance, redoValue),
+            name)
+    {
+        
+    }
 }
 
 public class UndoRedo
 {
+    private Boolean _enableAdd = true;
+    
     private ObservableCollection<IUndoRedo> _undoList = new();
     private ObservableCollection<IUndoRedo> _redoList = new();
     
@@ -63,7 +74,9 @@ public class UndoRedo
         {
             IUndoRedo cmd = _undoList.Last();
             _undoList.RemoveAt(_undoList.Count - 1);
+            _enableAdd = false;
             cmd.Undo();
+            _enableAdd = true;
             _redoList.Insert(0, cmd);
         }
     }
@@ -74,14 +87,19 @@ public class UndoRedo
         {
             IUndoRedo cmd = _redoList.First();
             _redoList.RemoveAt(0);
+            _enableAdd = false;
             cmd.Redo();
+            _enableAdd = true;
             _undoList.Add(cmd);
         }
     }
 
     public void Add(IUndoRedo cmd)
     {
-        _undoList.Add(cmd);
-        _redoList.Clear();
+        if(_enableAdd)
+        {
+            _undoList.Add(cmd);
+            _redoList.Clear();
+        }
     }
 }

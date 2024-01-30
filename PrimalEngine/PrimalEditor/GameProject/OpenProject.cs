@@ -55,7 +55,8 @@ public class OpenProject
         catch (Exception ex)
         {
             Console.WriteLine(ex);
-            
+            Logger.Log(MessageType.Error, "Failed to read project data.");
+            throw;
         }
     }
 

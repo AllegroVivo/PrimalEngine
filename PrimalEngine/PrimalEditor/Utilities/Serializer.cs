@@ -18,6 +18,8 @@ public static class Serializer
         catch (Exception ex)
         {
             Console.WriteLine(ex);
+            Logger.Log(MessageType.Error, $"Failed to serialize {instance} to {path}");
+            throw;
         }
     }
 
@@ -32,7 +34,8 @@ public static class Serializer
         catch (Exception ex)
         {
             Console.WriteLine(ex);
-            return default;
+            Logger.Log(MessageType.Error, $"Failed to deserialize {path}");
+            throw;
         }
     }
 }
