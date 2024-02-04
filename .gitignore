@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+# Custom Exclusions
+.idea/
+.vs/
+PrimalEngine/PrimalEditor/obj/
+PrimalEngine/PrimalEditor/bin/
+PrimalEngine/x64/
+PrimalEngine/Engine/x64/
