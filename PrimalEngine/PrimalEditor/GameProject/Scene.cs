@@ -9,7 +9,7 @@ using PrimalEditor.Utilities;
 namespace PrimalEditor.GameProject;
 
 [DataContract]
-public class Scene : ViewModelBase
+class Scene : ViewModelBase
 {
     private String _name;
 

@@ -27,9 +27,6 @@ public partial class ProjectLayoutView : UserControl
     {
         GameEntityView.Instance.DataContext = null;
         ListBox listBox = sender as ListBox;
-        
-        if (e.AddedItems.Count > 0)
-            GameEntityView.Instance.DataContext = listBox!.SelectedItems[0];
 
         List<GameEntity> newSelection = listBox!.SelectedItems.Cast<GameEntity>().ToList();
         List<GameEntity> previousSelection = newSelection.Except(e.AddedItems.Cast<GameEntity>()).Concat(e.RemovedItems.Cast<GameEntity>()).ToList();
@@ -47,6 +44,12 @@ public partial class ProjectLayoutView : UserControl
             },
             "Selection changed"
         ));
+
+        MSGameEntity msEntity = null;
+        if (newSelection.Any())
+            msEntity = new MSGameEntity(newSelection);
+
+        GameEntityView.Instance.DataContext = msEntity;
     }
 }
 

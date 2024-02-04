@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Windows.Input;
 using PrimalEditor.GameProject;
@@ -10,7 +12,7 @@ namespace PrimalEditor.Components;
 
 [DataContract]
 [KnownType(typeof(Transform))]
-public class GameEntity : ViewModelBase
+class GameEntity : ViewModelBase
 {
     private String _name;
 
@@ -29,7 +31,7 @@ public class GameEntity : ViewModelBase
     }
 
     private Boolean _isEnabled = true;
-    
+
     [DataMember]
     public Boolean IsEnabled
     {
@@ -44,16 +46,13 @@ public class GameEntity : ViewModelBase
         }
     }
 
-    
-    [DataMember]
-    public Scene ParentScene { get; private set; }
-    
-    public ICommand RenameCommand { get; private set; }
-    public ICommand IsEnabledCommand { get; private set; }
+
+    [DataMember] public Scene ParentScene { get; private set; }
 
     [DataMember(Name = nameof(Components))]
     private readonly ObservableCollection<Component> _components = new();
-    public ReadOnlyObservableCollection<Component> Components { get; private set;  }
+
+    public ReadOnlyObservableCollection<Component> Components { get; private set; }
 
     public GameEntity(Scene scene)
     {
@@ -71,19 +70,137 @@ public class GameEntity : ViewModelBase
             Components = new ReadOnlyObservableCollection<Component>(_components);
             OnPropertyChanged(nameof(Components));
         }
+        
+        
+    }
+}
 
-        RenameCommand = new RelayCommand<String>(x =>
-        {
-            String oldName = _name;
-            Name = x;
-            Project.UndoRedo.Add(new UndoRedoAction(nameof(Name), this, oldName, x, $"Rename entity '{oldName}` to `{x}`"));
-        }, x => x != _name);
+abstract class MSEntity : ViewModelBase
+{
+    private Boolean _enableUpdates = true;
+    
+    private Boolean? _isEnabled;
 
-        IsEnabledCommand = new RelayCommand<Boolean>(x =>
+    public Boolean? IsEnabled
+    {
+        get => _isEnabled;
+        set
         {
-            Boolean oldValue = _isEnabled;
-            IsEnabled = x;
-            Project.UndoRedo.Add(new UndoRedoAction(nameof(IsEnabled), this, oldValue, x, (x ? "Enable " : "Disable ") + $"'{Name}'"));
-        });
+            if (_isEnabled != value)
+            {
+                _isEnabled = value;
+                OnPropertyChanged(nameof(IsEnabled));
+            }
+        }
+    }
+
+    private String _name;
+
+    public String Name
+    {
+        get => _name;
+        set
+        {
+            if (_name != value)
+            {
+                _name = value;
+                OnPropertyChanged(nameof(Name));
+            }
+        }
+    }
+
+    private readonly ObservableCollection<IMSComponent> _components = new();
+    public ReadOnlyObservableCollection<IMSComponent> Components { get; private set; }
+    
+    public List<GameEntity> SelectedEntities { get; }
+
+    public MSEntity(List<GameEntity> entities)
+    {
+        Debug.Assert(entities?.Any() == true);
+        Components = new ReadOnlyObservableCollection<IMSComponent>(_components);
+        SelectedEntities = entities;
+        PropertyChanged += (_, e) =>
+        {  
+            if (_enableUpdates)
+                UpdateGameEntities(e.PropertyName);
+        };
+    }
+
+    protected virtual Boolean UpdateGameEntities(String propertyName)
+    {
+        switch (propertyName)
+        {
+            case nameof(IsEnabled):
+                SelectedEntities.ForEach(x => x.IsEnabled = IsEnabled.Value);
+                return true;
+            case nameof(Name):
+                SelectedEntities.ForEach(x => x.Name = Name);
+                return true;
+        }
+
+        return false;
+    }
+
+    public void Refresh()
+    {
+        _enableUpdates = false;
+        UpdateMSGameEntity();
+        _enableUpdates = true;
+    }
+
+    protected virtual Boolean UpdateMSGameEntity()
+    {
+        IsEnabled = GetMixedValue(SelectedEntities, new Func<GameEntity, Boolean>(x => x.IsEnabled));
+        Name = GetMixedValue(SelectedEntities, new Func<GameEntity, String>(x => x.Name));
+
+        return true;
+    }
+
+    public static Single? GetMixedValue(List<GameEntity> entities, Func<GameEntity, Single> getProperty)
+    {
+        Single value = getProperty(entities.First());
+
+        foreach (GameEntity entity in entities.Skip(1))
+        {
+            if (!value.IsTheSameAs(getProperty(entity)))
+                return null;
+        }
+        
+        return value;
+    }
+
+    public static Boolean? GetMixedValue(List<GameEntity> entities, Func<GameEntity, Boolean> getProperty)
+    {
+        Boolean value = getProperty(entities.First());
+
+        foreach (GameEntity entity in entities.Skip(1))
+        {
+            if (value != getProperty(entity))
+                return null;
+        }
+        
+        return value;
+    }
+
+    public static String GetMixedValue(List<GameEntity> entities, Func<GameEntity, String> getProperty)
+    {
+        String value = getProperty(entities.First());
+
+        foreach (GameEntity entity in entities.Skip(1))
+        {
+            if (value != getProperty(entity))
+                return null;
+        }
+        
+        return value;
+    }
+}
+
+class MSGameEntity : MSEntity
+{
+    public MSGameEntity(List<GameEntity> entities)
+        : base(entities)
+    {
+        Refresh();
     }
 }

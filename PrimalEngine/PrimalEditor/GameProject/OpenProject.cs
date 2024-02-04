@@ -11,7 +11,7 @@ using PrimalEditor.Utilities;
 namespace PrimalEditor.GameProject;
 
 [DataContract]
-public class ProjectData
+class ProjectData
 {
     [DataMember]
     public String ProjectName { get; set; }
@@ -27,13 +27,13 @@ public class ProjectData
 }
 
 [DataContract]
-public class ProjectDataList
+class ProjectDataList
 {
     [DataMember]
     public List<ProjectData> Projects { get; set; }
 }
 
-public class OpenProject
+class OpenProject
 {
     private static readonly String _applicationDataPath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\PrimalEditor\";
     private static readonly String _projectDataPath;

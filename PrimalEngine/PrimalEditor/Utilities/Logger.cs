@@ -44,8 +44,17 @@ public static class Logger
     public static ReadOnlyObservableCollection<LogMessage> Messages { get; } = new(_messages);
 
     public static CollectionViewSource FilteredMessages { get; } = new() { Source = Messages };
+    
+    static Logger()
+    {
+        FilteredMessages.Filter += (_, e) =>
+        {
+            var type = (Int32)(e.Item as LogMessage)!.MessageType;
+            e.Accepted = (type & _messageFilter) != 0;
+        };
+    }
 
-public static async void Log(MessageType type, String msg, [CallerFilePath] String file = "",
+    public static async void Log(MessageType type, String msg, [CallerFilePath] String file = "",
         [CallerMemberName] String caller = "", [CallerLineNumber] Int32 line = 0)
     {
         await Application.Current.Dispatcher.BeginInvoke(new Action(() =>
@@ -66,14 +75,5 @@ public static async void Log(MessageType type, String msg, [CallerFilePath] Stri
     {
         _messageFilter = mask;
         FilteredMessages.View.Refresh();
-    }
-
-    static Logger()
-    {
-        FilteredMessages.Filter += (s, e) =>
-        {
-            var type = (Int32)(e.Item as LogMessage)!.MessageType;
-            e.Accepted = (type & _messageFilter) != 0;
-        };
     }
 }
