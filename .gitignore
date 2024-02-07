@@ -34,6 +34,15 @@
 # Custom Exclusions
 .idea/
 .vs/
+*.tlog
+*.idb
+*.pdb
+*.user
+*.FileListAbsolute.txt
+*.ilk
+*.recipe
+*.log
+*.filters
 PrimalEngine/PrimalEditor/obj/
 PrimalEngine/PrimalEditor/bin/
 PrimalEngine/x64/
