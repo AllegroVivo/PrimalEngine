@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Windows.Input;
+using PrimalEditor.DllWrappers;
 using PrimalEditor.GameProject;
 using PrimalEditor.Utilities;
 
@@ -14,6 +15,48 @@ namespace PrimalEditor.Components;
 [KnownType(typeof(Transform))]
 class GameEntity : ViewModelBase
 {
+    private Int32 _entityId = ID.INVALID_ID;
+
+    public Int32 EntityId
+    {
+        get => _entityId;
+        set
+        {
+            if (_entityId != value)
+            {
+                _entityId = value;
+                OnPropertyChanged(nameof(EntityId));
+            }
+        }
+    }
+
+    private Boolean _isActive;
+
+    public Boolean IsActive
+    {
+        get => _isActive;
+        set
+        {
+            if (_isActive != value)
+            {
+                _isActive = value;
+
+                if (_isActive)
+                {
+                    EntityId = EngineAPI.CreateGameEntity(this);
+                    Debug.Assert(ID.IsValid(_entityId));
+                }
+                else
+                {
+                    EngineAPI.RemoveGameEntity(this);
+                }
+                
+                OnPropertyChanged(nameof(IsActive));
+            }
+        }
+    }
+
+    
     private String _name;
 
     [DataMember]
@@ -51,8 +94,10 @@ class GameEntity : ViewModelBase
 
     [DataMember(Name = nameof(Components))]
     private readonly ObservableCollection<Component> _components = new();
-
     public ReadOnlyObservableCollection<Component> Components { get; private set; }
+
+    public Component GetComponent(Type type) => Components.FirstOrDefault(c => c.GetType() == type);
+    public T GetComponent<T>() where T : Component => GetComponent(typeof(T)) as T;
 
     public GameEntity(Scene scene)
     {

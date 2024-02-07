@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media.Animation;
 
 namespace PrimalEditor.GameProject;
 
 public partial class ProjectBrowserDialog : Window
 {
+    private readonly CubicEase _easing = new() { EasingMode = EasingMode.EaseInOut };
     public ProjectBrowserDialog()
     {
         InitializeComponent();
@@ -31,7 +34,9 @@ public partial class ProjectBrowserDialog : Window
             if (createProjectButton.IsChecked == true)
             {
                 createProjectButton.IsChecked = false;
-                browserContent.Margin = new Thickness(0);
+                AnimateToOpenProject();
+                openProjectView.IsEnabled = true;
+                newProjectView.IsEnabled = false;
             }
 
             openProjectButton.IsChecked = true;
@@ -41,11 +46,45 @@ public partial class ProjectBrowserDialog : Window
             if (openProjectButton.IsChecked == true)
             {
                 openProjectButton.IsChecked = false;
-                browserContent.Margin = new Thickness(-800, 0, 0, 0);
+                AnimateToCreateProject();
+                openProjectView.IsEnabled = false;
+                newProjectView.IsEnabled = true;
             }
 
             createProjectButton.IsChecked = true;
         }
+    }
+
+    private void AnimateToCreateProject()
+    {
+        DoubleAnimation highlightAnimation = new(200, 400, new Duration(TimeSpan.FromSeconds(0.2)))
+        {
+            EasingFunction = _easing
+        };
+
+        highlightAnimation.Completed += (_, _) =>
+        {
+            ThicknessAnimation animation = new(new Thickness(0), new Thickness(-1600, 0, 0, 0), new Duration(TimeSpan.FromSeconds(0.5)));
+            animation.EasingFunction = _easing;
+            browserContent.BeginAnimation(MarginProperty, animation);
+        };
+        highlightAnimation.BeginAnimation(Canvas.LeftProperty, highlightAnimation);
+    }
+
+    private void AnimateToOpenProject()
+    {
+        DoubleAnimation highlightAnimation = new(400, 200, new Duration(TimeSpan.FromSeconds(0.2)))
+        {
+            EasingFunction = _easing
+        };
+
+        highlightAnimation.Completed += (_, _) =>
+        {
+            ThicknessAnimation animation = new(new Thickness(-1600, 0, 0, 0), new Thickness(0), new Duration(TimeSpan.FromSeconds(0.5)));
+            animation.EasingFunction = _easing;
+            browserContent.BeginAnimation(MarginProperty, animation);
+        };
+        highlightAnimation.BeginAnimation(Canvas.LeftProperty, highlightAnimation);
     }
 }
 

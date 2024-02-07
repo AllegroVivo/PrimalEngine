@@ -16,3 +16,9 @@ public static class MathUtils
         return Math.Abs(value.Value - other.Value) < Epsilon;
     }
 }
+
+public static class ID
+{
+    public static Int32 INVALID_ID => -1;
+    public static Boolean IsValid(Int32 id) => id != INVALID_ID;
+}

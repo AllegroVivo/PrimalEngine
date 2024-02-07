@@ -32,4 +32,22 @@ public partial class ControlTemplates : ResourceDictionary
             Keyboard.ClearFocus();
         }
     }
+
+    private void OnCloseButton_Click(Object sender, RoutedEventArgs e)
+    {
+        Window window = (Window)((FrameworkElement)sender).TemplatedParent;
+        window.Close();
+    }
+
+    private void OnMaximizeRestoreButton_Click(Object sender, RoutedEventArgs e)
+    {
+        Window window = (Window)((FrameworkElement)sender).TemplatedParent;
+        window.WindowState = window.WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
+    }
+
+    private void OnMinimizeButton_Click(Object sender, RoutedEventArgs e)
+    {
+        Window window = (Window)((FrameworkElement)sender).TemplatedParent;
+        window.WindowState = WindowState.Minimized;
+    }
 }

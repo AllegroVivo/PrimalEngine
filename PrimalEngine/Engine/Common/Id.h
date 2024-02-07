@@ -8,7 +8,7 @@ namespace primal::id
 
     namespace internal
     {
-        constexpr id_type generation_bits { 8 };
+        constexpr id_type generation_bits { 10 };
         constexpr id_type index_bits { sizeof(id_type) * 8 - generation_bits };
         constexpr id_type index_mask { (id_type { 1 } << index_bits) - 1 };
         constexpr id_type generation_mask { (id_type { 1 } << generation_bits) - 1 };

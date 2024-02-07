@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CommonHeaders.h"
+#include "PrimitiveTypes.h"
 
 namespace primal::math
 {

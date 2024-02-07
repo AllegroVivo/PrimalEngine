@@ -63,27 +63,36 @@ class Scene : ViewModelBase
         OnDeserialized(new StreamingContext());
     }
 
-    private void AddGameEntity(GameEntity entity)
+    private void AddGameEntity(GameEntity entity, Int32 index = -1)
     {
         Debug.Assert(!_gameEntities.Contains(entity));
-        _gameEntities.Add(entity);
+        entity.IsActive = IsActive;
+
+        if (index == -1)
+            _gameEntities.Add(entity);
+        else
+            _gameEntities.Insert(index, entity);
     }
 
     private void RemoveGameEntity(GameEntity entity)
     {
         Debug.Assert(_gameEntities.Contains(entity));
+        entity.IsActive = false;
         _gameEntities.Remove(entity);
     }
 
     [OnDeserialized]
     private void OnDeserialized(StreamingContext context)
     {
-        // _gameEntities ??= new ObservableCollection<GameEntity>();
-        
         if (_gameEntities != null)
         {
             GameEntities = new ReadOnlyObservableCollection<GameEntity>(_gameEntities);
             OnPropertyChanged(nameof(GameEntities));
+        }
+
+        foreach (GameEntity entity in _gameEntities!)
+        {
+            entity.IsActive = IsActive;
         }
         
         AddGameEntityCommand = new RelayCommand<GameEntity>(x =>
@@ -93,7 +102,7 @@ class Scene : ViewModelBase
             
             Project.UndoRedo.Add(new UndoRedoAction(
                 () => RemoveGameEntity(x),
-                () => _gameEntities.Insert(entityIndex, x),
+                () => AddGameEntity(x, entityIndex),
                 $"Add {x.Name} to {Name}"));
         });
         RemoveGameEntityCommand = new RelayCommand<GameEntity>(x =>
@@ -102,7 +111,7 @@ class Scene : ViewModelBase
             RemoveGameEntity(x);
 
             Project.UndoRedo.Add(new UndoRedoAction(
-                () => _gameEntities.Insert(entityIndex, x),
+                () => AddGameEntity(x, entityIndex),
                 () => RemoveGameEntity(x),
                 $"Remove {x.Name} from {Name}"));
         });
