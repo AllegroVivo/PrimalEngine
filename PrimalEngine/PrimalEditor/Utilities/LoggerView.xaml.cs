@@ -27,9 +27,9 @@ public partial class LoggerView : UserControl
         Int32 filter = 0x00;
         if (toggleInfo.IsChecked == true)
             filter |= (Int32)MessageType.Info;
-        if (toggleWarning.IsChecked == true)
+        if (toggleWarnings.IsChecked == true)
             filter |= (Int32)MessageType.Warning;
-        if (toggleError.IsChecked == true)
+        if (toggleErrors.IsChecked == true)
             filter |= (Int32)MessageType.Error;
         Logger.SetMessageFilter(filter);
     }
