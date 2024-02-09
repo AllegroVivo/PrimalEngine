@@ -49,7 +49,7 @@ EDITOR_INTERFACE id::id_type CreateGameEntity(game_entity_descriptor* e)
     game_entity_descriptor& desc { *e };
     transform::init_info transform_info { desc.transform.to_init_info() };
     game_entity::entity_info entity_info { &transform_info, };
-    return create(entity_info).get_id();
+    return game_entity::create(entity_info).get_id();
 }
 
 EDITOR_INTERFACE void RemoveGameEntity(id::id_type id)

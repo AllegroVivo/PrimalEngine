@@ -72,7 +72,7 @@ namespace primal
 #define REGISTER_SCRIPT(TYPE)                                   \
 class TYPE;                                            \
 namespace {                                             \
-const UInt8 _reg##TYPE                              \
+const UInt8 _reg_##TYPE                              \
 { primal::script::detail::register_script(          \
 primal::script::detail::string_hash()(#TYPE),                \
 &primal::script::detail::create_script<TYPE>)   \

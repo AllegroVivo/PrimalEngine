@@ -25,6 +25,7 @@ public class ProjectTemplate
     public String IconFilePath { get; set; }
     public String ScreenshotFilePath { get; set; }
     public String ProjectFilePath { get; set; }
+    public String TemplatePath { get; set; }
 }
 
 class NewProject : ViewModelBase
@@ -113,6 +114,7 @@ class NewProject : ViewModelBase
                 template.ScreenshotFilePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(file), "Screenshot.png"));
                 template.Screenshot = File.ReadAllBytes(template.ScreenshotFilePath);
                 template.ProjectFilePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(file), template.ProjectFile));
+                template.TemplatePath = Path.GetDirectoryName(file);
                 
                 _projectTemplates.Add(template);
             }
@@ -185,6 +187,8 @@ class NewProject : ViewModelBase
             projectXml = String.Format(projectXml, ProjectName, ProjectPath);
             String projectPath = Path.GetFullPath(Path.Combine(path, $"{ProjectName}{Project.Extension}"));
             File.WriteAllText(projectPath, projectXml);
+
+            CreateMSVCSolution(template, path);
             
             return path;
         }
@@ -194,5 +198,28 @@ class NewProject : ViewModelBase
             Logger.Log(MessageType.Error, $"Failed to create {ProjectName}");
             throw;
         }
+    }
+
+    private void CreateMSVCSolution(ProjectTemplate template, String projectPath)
+    {
+        Debug.Assert(File.Exists(Path.Combine(template.TemplatePath, "MSVCSolution")));
+        Debug.Assert(File.Exists(Path.Combine(template.TemplatePath, "MSVCProject")));
+
+        var engineAPIPath = Path.Combine(MainWindow.PrimalPath, @"Engine\EngineAPI");
+        Debug.Assert(Directory.Exists(engineAPIPath));
+
+        var _0 = ProjectName;
+        var _1 = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+        var _2 = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+        
+        String solution = File.ReadAllText(Path.Combine(template.TemplatePath, "MSVCSolution"));
+        solution = String.Format(solution, _0, _1, _2);
+        File.WriteAllText(Path.GetFullPath(Path.Combine(projectPath, $"{_0}.sln")), solution);
+
+        var _3 = MainWindow.PrimalPath;
+        
+        String project = File.ReadAllText(Path.Combine(template.TemplatePath, "MSVCProject"));
+        project = String.Format(project, _0, _1, engineAPIPath, _3);
+        File.WriteAllText(Path.GetFullPath(Path.Combine(projectPath, $@"GameCode\{_0}.vcxproj")), project);
     }
 }
