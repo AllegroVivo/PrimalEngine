@@ -2,13 +2,11 @@
 
 #include "ComponentsCommon.h"
 
-namespace primal::transform
+namespace primal::script
 {
     struct init_info
     {
-        Single position[3] { };
-        Single rotation[4] { };
-        Single scale[3] { 1.f, 1.f, 1.f };
+        detail::script_creator script_creator;
     };
 
     component create(init_info info, game_entity::entity entity);
