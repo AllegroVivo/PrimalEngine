@@ -20,4 +20,3 @@ public partial class WorldEditorView : UserControl
         Focus();
     }
 }
-
