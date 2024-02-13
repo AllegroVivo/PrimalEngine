@@ -11,6 +11,6 @@ namespace primal::transform
         Single scale[3] { 1.f, 1.f, 1.f };
     };
 
-    component create(init_info info, game_entity::entity entity);
-    void remove(component c);
+    component create_transform(const init_info& info, game_entity::entity entity);
+    void remove_transform(component c);
 }

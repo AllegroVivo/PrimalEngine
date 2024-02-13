@@ -2,7 +2,6 @@
 
 #define USE_STL_VECTOR 1
 #define USE_STL_DEQUE 1
-#include <algorithm>
 
 #if USE_STL_VECTOR
 
@@ -11,20 +10,6 @@ namespace primal::utl
 {
     template<typename T>
     using vector = std::vector<T>;
-
-    template<typename  T>
-    void erase_unordered(std::vector<T>& v, size_t index)
-    {
-        if (v.size() > 1)
-        {
-            std::iter_swap(v.begin() + index, v.end() - 1);
-            v.pop_back();
-        }
-        else
-        {
-            v.clear();
-        }
-    }
 }
 
 #endif

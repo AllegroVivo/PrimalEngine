@@ -6,8 +6,6 @@
 #include <cstdint>
 #include <cassert>
 #include <typeinfo>
-#include <memory>
-#include <unordered_map>
 
 #if defined(_WIN64)
     #include <DirectXMath.h>
