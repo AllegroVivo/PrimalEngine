@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Windows;
 using System.Windows.Input;
+using PrimalEditor.GameDev;
 using PrimalEditor.Utilities;
 
 namespace PrimalEditor.GameProject;
@@ -18,7 +19,8 @@ class Project : ViewModelBase
     [DataMember] public String Name { get; private set; } = "New Project";
     [DataMember] public String ProjectPath { get; private set; }
 
-    public String FullPath => $@"{ProjectPath}{Name}\{Name}{Extension}";
+    public String Solution => $"{ProjectPath}{Name}.sln";
+    public String FullPath => $@"{ProjectPath}{Name}{Extension}";
 
     public static Project Current => Application.Current.MainWindow?.DataContext as Project;
 
@@ -26,13 +28,13 @@ class Project : ViewModelBase
 
     [DataMember(Name = "Scenes")] private ObservableCollection<Scene> _scenes = new();
     public ReadOnlyObservableCollection<Scene> Scenes { get; private set; }
-    
+
     public ICommand AddSceneCommand { get; private set; }
     public ICommand RemoveSceneCommand { get; private set; }
     public ICommand UndoCommand { get; private set; }
     public ICommand RedoCommand { get; private set; }
     public ICommand SaveCommand { get; private set; }
-    
+
     private Scene _activeScene;
     
     public Scene ActiveScene
@@ -96,6 +98,7 @@ class Project : ViewModelBase
 
     public void Unload()
     {
+        VisualStudio.CloseVisualStudio();
         UndoRedo.Reset();
     }
 
