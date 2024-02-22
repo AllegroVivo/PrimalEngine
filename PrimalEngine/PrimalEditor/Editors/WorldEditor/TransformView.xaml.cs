@@ -61,7 +61,7 @@ public partial class TransformView : UserControl
 
     private void OnPositionVectorBox_PreviewMouseLBU(Object sender, MouseButtonEventArgs e)
     {
-        RecordAction(GetPositionAction(), "Position Changed");
+        RecordActions(GetPositionAction(), "Position Changed");
     }
     
     private void OnRotationVectorBox_PreviewMouseLBD(Object sender, MouseButtonEventArgs e)
@@ -72,7 +72,7 @@ public partial class TransformView : UserControl
 
     private void OnRotationVectorBox_PreviewMouseLBU(Object sender, MouseButtonEventArgs e)
     {
-        RecordAction(GetRotationAction(), "Rotation Changed");
+        RecordActions(GetRotationAction(), "Rotation Changed");
     }
     
     private void OnScaleVectorBox_PreviewMouseLBD(Object sender, MouseButtonEventArgs e)
@@ -83,10 +83,10 @@ public partial class TransformView : UserControl
 
     private void OnScaleVectorBox_PreviewMouseLBU(Object sender, MouseButtonEventArgs e)
     {
-        RecordAction(GetScaleAction(), "Scale Changed");
+        RecordActions(GetScaleAction(), "Scale Changed");
     }
 
-    private void RecordAction(Action redoAction, String name)
+    private void RecordActions(Action redoAction, String name)
     {
         if (_propertyChanged)
         {
