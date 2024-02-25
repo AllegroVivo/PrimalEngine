@@ -184,7 +184,7 @@ class NewProject : ViewModelBase
             File.Copy(template.ScreenshotFilePath, Path.GetFullPath(Path.Combine(dirInfo.FullName, "Screenshot.png")));
 
             String projectXml = File.ReadAllText(template.ProjectFilePath);
-            projectXml = String.Format(projectXml, ProjectName, ProjectPath);
+            projectXml = String.Format(projectXml, ProjectName, path);
             String projectPath = Path.GetFullPath(Path.Combine(path, $"{ProjectName}{Project.Extension}"));
             File.WriteAllText(projectPath, projectXml);
 
