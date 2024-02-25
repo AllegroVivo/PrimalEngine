@@ -25,40 +25,29 @@ namespace PrimalEditor.DllWrappers
 {
     static class EngineAPI
     {
-        private const String _engineDll = "C:/Dev/CPlusPlus/PrimalEngine/PrimalEngine/x64/Debug/EngineDLL.dll";
-        
-        [DllImport(_engineDll, CharSet = CharSet.Ansi)]
-        public static extern Int32 LoadGameCodeDll(String dllPath);
-        
-        [DllImport(_engineDll)]
-        public static extern Int32 UnloadGameCodeDll();
+        private const String _dllName = "C:/Dev/CPlusPlus/PrimalEngine/PrimalEngine/x64/Debug/EngineDLL.dll";
 
-        internal static class EntityAPI
+        [DllImport(_dllName)]
+        private static extern Int32 CreateGameEntity(GameEntityDescriptor desc);
+
+        public static Int32 CreateGameEntity(GameEntity entity)
         {
-            [DllImport(_engineDll)]
-            private static extern Int32 CreateGameEntity(GameEntityDescriptor desc);
-            public static Int32 CreateGameEntity(GameEntity entity)
-            {
-                GameEntityDescriptor desc = new();
-
-                //transform component
-                {
-                    Transform c = entity.GetComponent<Transform>();
-                    desc.Transform.Position = c.Position;
-                    desc.Transform.Rotation = c.Rotation;
-                    desc.Transform.Scale = c.Scale;
-                }
-
-                return CreateGameEntity(desc);
-            }
-
-            [DllImport(_engineDll)]
-            private static extern void RemoveGameEntity(Int32 id);
+            GameEntityDescriptor desc = new();
             
-            public static void RemoveGameEntity(GameEntity entity)
-            {
-                RemoveGameEntity(entity.EntityId);
-            }
+            Transform c = entity.GetComponent<Transform>();
+            desc.Transform.Position = c.Position;
+            desc.Transform.Rotation = c.Rotation;
+            desc.Transform.Scale = c.Scale;
+
+            return CreateGameEntity(desc);
+        }
+
+        [DllImport(_dllName)]
+        private static extern void RemoveGameEntity(Int32 id);
+
+        public static void RemoveGameEntity(GameEntity entity)
+        {
+            RemoveGameEntity(entity.EntityId);
         }
     }
 }

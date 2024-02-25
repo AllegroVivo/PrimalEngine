@@ -43,12 +43,12 @@ class GameEntity : ViewModelBase
 
                 if (_isActive)
                 {
-                    EntityId = EngineAPI.EntityAPI.CreateGameEntity(this);
+                    EntityId = EngineAPI.CreateGameEntity(this);
                     Debug.Assert(ID.IsValid(_entityId));
                 }
                 else if (ID.IsValid(_entityId))
                 {
-                    EngineAPI.EntityAPI.RemoveGameEntity(this);
+                    EngineAPI.RemoveGameEntity(this);
                     EntityId = ID.INVALID_ID;
                 }
                 

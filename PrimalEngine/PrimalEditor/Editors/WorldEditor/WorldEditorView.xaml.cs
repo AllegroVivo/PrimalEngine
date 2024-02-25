@@ -2,7 +2,6 @@ using System;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
-using PrimalEditor.GameDev;
 using PrimalEditor.GameProject;
 
 namespace PrimalEditor.Editors;
@@ -20,6 +19,5 @@ public partial class WorldEditorView : UserControl
         Loaded -= OnWorldEditorViewLoaded;
         Focus();
     }
-
-    private void OnNewScriptButton_Click(Object sender, RoutedEventArgs e) => new NewScriptDialog().ShowDialog();
 }
+

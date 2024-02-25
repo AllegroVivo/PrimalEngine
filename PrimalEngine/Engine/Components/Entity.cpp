@@ -1,19 +1,16 @@
 #include "Entity.h"
 #include "Transform.h"
-#include "Script.h"
 
 namespace primal::game_entity
 {
     namespace
     {
         utl::vector<transform::component> transforms;
-        utl::vector<script::component> scripts;
-        
         utl::vector<id::generation_type> generations;
         utl::deque<entity_id> free_ids;
     }
 
-    entity create(entity_info info)
+    entity create_game_entity(const entity_info& info)
     {
         assert(info.transform);
         if (!info.transform)
@@ -24,7 +21,7 @@ namespace primal::game_entity
         if (free_ids.size() > id::min_deleted_elements)
         {
             id = free_ids.front();
-            assert(!is_alive(id));
+            assert(!is_alive(entity { id }));
             free_ids.pop_front();
             id = entity_id { id::new_generation(id) };
             ++generations[id::index(id)];
@@ -35,46 +32,36 @@ namespace primal::game_entity
             generations.push_back(0);
 
             transforms.emplace_back();
-            scripts.emplace_back();
         }
 
         const entity new_entity { id };
         const id::id_type index { id::index(id) };
 
         assert(!transforms[index].is_valid());
-        transforms[index] = create(*info.transform, new_entity);
+        transforms[index] = create_transform(*info.transform, new_entity);
         if (!transforms[index].is_valid())
             return { };
-
-        if (info.script && info.script->script_creator)
-        {
-            assert(!scripts[index].is_valid());
-            scripts[index] = script::create(*info.script, new_entity);
-            assert(scripts[index].is_valid());
-        }
 
         return new_entity;
     }
 
-    void remove(entity_id id)
+    void remove_game_entity(entity e)
     {
+        const entity_id id { e.get_id() };
         const id::id_type index { id::index(id) };
-        assert(is_alive(id));
-
-        if (scripts[index].is_valid())
+        assert(is_alive(e));
+        if (is_alive(e))
         {
-            script::remove(scripts[index]);
-            scripts[index] = { };
+            remove_transform(transforms[index]);
+            transforms[index] = { };
+            free_ids.push_back(id);
         }
-        
-        remove(transforms[index]);
-        transforms[index] = { };
-        free_ids.push_back(id);
     }
 
-    bool is_alive(entity_id id)
+    bool is_alive(entity e)
     {
-        assert(id::is_valid(id));
+        assert(e.is_valid());
+        const entity_id id { e.get_id() };
         const id::id_type index { id::index(id) };
         assert(index < generations.size());
         assert(generations[index] == id::generation(id));
@@ -83,15 +70,8 @@ namespace primal::game_entity
 
     transform::component entity::transform() const
     {
-        assert(is_alive(_id));
+        assert(is_alive(*this));
         const id::id_type index { id::index(_id) };
         return transforms[index];
-    }
-
-    script::component entity::script() const
-    {
-        assert(is_alive(_id));
-        const id::id_type index { id::index(_id) };
-        return scripts[index];
     }
 }
