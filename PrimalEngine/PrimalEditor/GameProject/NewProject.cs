@@ -30,7 +30,7 @@ public class ProjectTemplate
 
 class NewProject : ViewModelBase
 {
-    private readonly String _templatePath = @"..\..\..\ProjectTemplates";
+    private readonly String _templatePath = @"..\..\..\..\ProjectTemplates";
     private String _projectName = "NewProject";
     
     public String ProjectName

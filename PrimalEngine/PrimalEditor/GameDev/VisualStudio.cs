@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
+using System.Threading;
+using PrimalEditor.GameProject;
 using PrimalEditor.Utilities;
 
 namespace PrimalEditor.GameDev;
@@ -12,6 +14,8 @@ static class VisualStudio
 {
     private static EnvDTE80.DTE2 _vsInstance = null;
     private static readonly String _progID = "VisualStudio.DTE.17.0";
+    public static Boolean BuildSucceeded { get; private set; } = true;
+    public static Boolean BuildDone { get; private set; } = true;
 
     [DllImport("ole32.dll")]
     private static extern Int32 CreateBindCtx(UInt32 reserved, out IBindCtx ppbc);
@@ -134,5 +138,91 @@ static class VisualStudio
         }
 
         return true;
+    }
+
+    public static void BuildSolution(Project project, String configName, Boolean showWindow = true)
+    {
+        if (IsDebugging())
+        {
+            Logger.Log(MessageType.Error, "Visual Studio is currently running a process.");
+            return;
+        }
+
+        OpenVisualStudio(project.Solution);
+        BuildSucceeded = BuildDone = false;
+
+        for (Int32 i = 0; i < 3; i++)
+        {
+            try
+            {
+                if (!_vsInstance.Solution.IsOpen)
+                    _vsInstance.Solution.Open(project.Solution);
+
+                _vsInstance.MainWindow.Visible = showWindow;
+
+                _vsInstance.Events.BuildEvents.OnBuildProjConfigBegin += OnBuildSolutionBegin;
+                _vsInstance.Events.BuildEvents.OnBuildProjConfigDone += OnBuildSolutionDone;
+
+                try
+                {
+                    foreach (String pdbFile in Directory.GetFiles(Path.Combine($"{project.ProjectPath}", $@"x64\{configName}"), "*.pdb"))
+                        File.Delete(pdbFile);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                }
+                
+                _vsInstance.Solution.SolutionBuild.SolutionConfigurations.Item(configName).Activate();
+                _vsInstance.ExecuteCommand("Build.BuildSolution");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                Debug.WriteLine($"Attempt {i}: failed to build {project.Name}");
+                Thread.Sleep(1000);
+            }
+        }
+    }
+
+    public static Boolean IsDebugging()
+    {
+        Boolean result = false;
+
+        for (Int32 i = 0; i < 3; i++)
+        {
+            try
+            {
+                result = _vsInstance != null &&
+                         (_vsInstance.Debugger.CurrentProgram != null || _vsInstance.Debugger.CurrentMode == EnvDTE.dbgDebugMode.dbgRunMode);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                if (!result)
+                    Thread.Sleep(1000);
+            }
+        }
+
+        return result;
+    }
+
+    private static void OnBuildSolutionBegin(String project, String projectConfig, String platform, String solutionConfig)
+    {
+        Logger.Log(MessageType.Info, $"Building {project}, {projectConfig}, {platform}, {solutionConfig}");
+    }
+
+    private static void OnBuildSolutionDone(String project, String projectConfig, String platform, String solutionConfig, Boolean success)
+    {
+        if (BuildDone)
+            return;
+
+        if (success) 
+            Logger.Log(MessageType.Info, $"Building {projectConfig} configuration succeeded");
+        else 
+            Logger.Log(MessageType.Error, $"Building {projectConfig} configuration failed");
+
+        BuildDone = true;
+        BuildSucceeded = success;
     }
 }

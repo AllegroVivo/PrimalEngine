@@ -37,6 +37,8 @@
 *.tlog
 *.idb
 *.pdb
+*.ipdb
+*.iobj
 *.user
 *.FileListAbsolute.txt
 *.ilk
