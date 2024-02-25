@@ -8,7 +8,7 @@ namespace primal::game_entity
     {
         utl::vector<transform::component> transforms;
         utl::vector<script::component> scripts;
-        
+
         utl::vector<id::generation_type> generations;
         utl::deque<entity_id> free_ids;
     }
@@ -35,6 +35,7 @@ namespace primal::game_entity
             generations.push_back(0);
 
             transforms.emplace_back();
+            scripts.emplace_back();
         }
 
         const entity new_entity { id };
@@ -59,6 +60,13 @@ namespace primal::game_entity
     {
         const id::id_type index { id::index(id) };
         assert(is_alive(id));
+
+        if (scripts[index].is_valid())
+        {
+            script::remove(scripts[index]);
+            scripts[index] = { };
+        }
+
         remove(transforms[index]);
         transforms[index] = { };
         free_ids.push_back(id);
@@ -86,5 +94,4 @@ namespace primal::game_entity
         const id::id_type index { id::index(_id) };
         return scripts[index];
     }
-
 }
