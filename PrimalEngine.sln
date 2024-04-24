@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34202.233
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Editor", "Editor\Editor.csproj", "{02B79162-0BDD-45F9-8250-3D0363347D73}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine\Engine.vcxproj", "{0FB46BC2-EC24-4265-BEE5-8D902065A784}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{02B79162-0BDD-45F9-8250-3D0363347D73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02B79162-0BDD-45F9-8250-3D0363347D73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02B79162-0BDD-45F9-8250-3D0363347D73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02B79162-0BDD-45F9-8250-3D0363347D73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FB46BC2-EC24-4265-BEE5-8D902065A784}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{0FB46BC2-EC24-4265-BEE5-8D902065A784}.Debug|Any CPU.Build.0 = Debug|x64
+		{0FB46BC2-EC24-4265-BEE5-8D902065A784}.Release|Any CPU.ActiveCfg = Release|x64
+		{0FB46BC2-EC24-4265-BEE5-8D902065A784}.Release|Any CPU.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
