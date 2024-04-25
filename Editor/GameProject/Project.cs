@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Windows;
+using System.Windows.Input;
 using Editor.Utilities;
 
 namespace Editor.GameProject;
@@ -18,9 +19,10 @@ public class Project : ViewModelBase
     public String Name { get; private set; } = "New Project";
     [DataMember]
     public String Path { get; private set; }
-    public String FullPath => $"{Path}{Name}{Extension}";
+    public String FullPath => $@"{Path}{Name}\{Name}{Extension}";
 
     public static Project Current => Application.Current.MainWindow!.DataContext as Project;
+    public static UndoRedo UndoRedo { get; } = new();
 
     private Scene _activeScene;
     public Scene ActiveScene
@@ -35,7 +37,13 @@ public class Project : ViewModelBase
             }
         }
     }
-
+    
+    public ICommand AddSceneCommand { get; private set; }
+    public ICommand RemoveSceneCommand { get; private set; }
+    
+    public ICommand UndoCommand { get; private set; }
+    public ICommand RedoCommand { get; private set; }
+    public ICommand SaveCommand { get; private set; }
     
     [DataMember(Name = "Scenes")]
     private ObservableCollection<Scene> _scenes = new();
@@ -51,7 +59,7 @@ public class Project : ViewModelBase
 
     public void Unload()
     {
-        
+        UndoRedo.Reset();
     }
 
     public static Project Load(String file)
@@ -63,6 +71,7 @@ public class Project : ViewModelBase
     public static void Save(Project project)
     {
         Serializer.ToFile(project, project.FullPath);
+        Logger.Log(MessageType.Info, $"Saved project to {project.FullPath}");
     }
 
     [OnDeserialized]
@@ -75,5 +84,45 @@ public class Project : ViewModelBase
         }
 
         ActiveScene = Scenes.FirstOrDefault(x => x.IsActive);
+
+        AddSceneCommand = new RelayCommand<Object>(_ =>
+        {
+            AddScene($"New Scene {_scenes.Count}");
+            Scene newScene = _scenes.Last();
+            Int32 sceneIndex = _scenes.Count - 1;
+            UndoRedo.Add(new UndoRedoAction(
+                () => RemoveScene(newScene),
+                () => _scenes.Insert(sceneIndex, newScene),
+                $"Add {newScene.Name}"
+            ));
+        });
+
+        RemoveSceneCommand = new RelayCommand<Scene>(x =>
+        {
+            Int32 sceneIndex = _scenes.IndexOf(x);
+            RemoveScene(x);
+
+            UndoRedo.Add(new UndoRedoAction(
+                () => _scenes.Insert(sceneIndex, x),
+                () => RemoveScene(x),
+                $"Remove {x.Name}"
+            ));
+        }, x => !x.IsActive);
+
+        UndoCommand = new RelayCommand<Object>(_ => UndoRedo.Undo());
+        RedoCommand = new RelayCommand<Object>(_ => UndoRedo.Redo());
+        SaveCommand = new RelayCommand<Object>(_ => Save(this));
+    }
+
+    private void AddScene(String sceneName)
+    {
+        Debug.Assert(!String.IsNullOrEmpty(sceneName.Trim()));
+        _scenes.Add(new Scene(this, sceneName));
+    }
+
+    private void RemoveScene(Scene scene)
+    {
+        Debug.Assert(_scenes.Contains(scene));
+        _scenes.Remove(scene);
     }
 }

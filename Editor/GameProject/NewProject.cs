@@ -120,6 +120,8 @@ class NewProject : ViewModelBase
         catch (Exception ex)
         {
             Debug.WriteLine(ex.Message);
+            Logger.Log(MessageType.Error, "Failed to read project templates");
+            throw;
         }
     }
 
@@ -186,7 +188,8 @@ class NewProject : ViewModelBase
         catch (Exception ex)
         {
             Debug.WriteLine(ex);
-            return String.Empty;
+            Logger.Log(MessageType.Error, $"Failed to create {template.ProjectType}");
+            throw;
         }
     }
 }
