@@ -25,8 +25,6 @@ public partial class ProjectLayoutView : UserControl
     private void OnGEListBox_SelectionChanged(Object sender, SelectionChangedEventArgs e)
     {
         GameEntityView.Instance.DataContext = null;
-        if (e.AddedItems.Count > 0)
-            GameEntityView.Instance.DataContext = (sender as ListBox)!.SelectedItems[0];
 
         ListBox listBox = sender as ListBox;
         var newSelection = listBox!.SelectedItems.Cast<GameEntity>().ToList();
@@ -45,6 +43,12 @@ public partial class ProjectLayoutView : UserControl
             },
             "Selection changed"
             ));
+
+        MSGameEntity msEntity = null;
+        if (newSelection.Any())
+            msEntity = new MSGameEntity(newSelection);
+
+        GameEntityView.Instance.DataContext = msEntity;
     }
 }
 

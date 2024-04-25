@@ -11,7 +11,7 @@ using Editor.Utilities;
 namespace Editor.GameProject;
 
 [DataContract(Name = "Game")]
-public class Project : ViewModelBase
+class Project : ViewModelBase
 {
     public static String Extension = ".primal";
 
