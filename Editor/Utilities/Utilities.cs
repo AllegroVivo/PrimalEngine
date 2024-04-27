@@ -2,6 +2,12 @@
 
 namespace Editor.Utilities;
 
+public static class ID
+{
+    public static Int32 INVALID_ID => -1;
+    public static Boolean IsValid(Int32 id) => id != INVALID_ID;
+}
+
 public static class MathUtil
 {
     public static Single Epsilon => 0.00001f;

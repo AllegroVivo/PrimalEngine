@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Editor", "Editor\Editor.csp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine\Engine.vcxproj", "{0FB46BC2-EC24-4265-BEE5-8D902065A784}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EngineTest", "EngineTest\EngineTest.vcxproj", "{0419779F-FA6F-43E2-90D1-67CCCB02B452}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EngineDLL", "EngineDLL\EngineDLL.vcxproj", "{65DB085E-C4BD-4D3B-AD97-86F2B604BEF5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,12 @@ Global
 		{0FB46BC2-EC24-4265-BEE5-8D902065A784}.Debug|Any CPU.Build.0 = Debug|x64
 		{0FB46BC2-EC24-4265-BEE5-8D902065A784}.Release|Any CPU.ActiveCfg = Release|x64
 		{0FB46BC2-EC24-4265-BEE5-8D902065A784}.Release|Any CPU.Build.0 = Release|x64
+		{0419779F-FA6F-43E2-90D1-67CCCB02B452}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{0419779F-FA6F-43E2-90D1-67CCCB02B452}.Debug|Any CPU.Build.0 = Debug|x64
+		{0419779F-FA6F-43E2-90D1-67CCCB02B452}.Release|Any CPU.ActiveCfg = Release|x64
+		{65DB085E-C4BD-4D3B-AD97-86F2B604BEF5}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{65DB085E-C4BD-4D3B-AD97-86F2B604BEF5}.Debug|Any CPU.Build.0 = Debug|x64
+		{65DB085E-C4BD-4D3B-AD97-86F2B604BEF5}.Release|Any CPU.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

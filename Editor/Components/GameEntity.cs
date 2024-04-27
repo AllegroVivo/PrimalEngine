@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Windows.Input;
+using Editor.DllWrapper;
 using Editor.GameProject;
 using Editor.Utilities;
 
@@ -14,6 +15,47 @@ namespace Editor.Components;
 [KnownType(typeof(Transform))]
 class GameEntity : ViewModelBase
 {
+    private Int32 _entityID = ID.INVALID_ID;
+
+    public Int32 EntityID
+    {
+        get => _entityID;
+        set
+        {
+            if (_entityID != value)
+            {
+                _entityID = value;
+                OnPropertyChanged(nameof(EntityID));
+            }
+        }
+    }
+
+    private Boolean _isActive;
+
+    public Boolean IsActive
+    {
+        get => _isActive;
+        set
+        {
+            if (_isActive != value)
+            {
+                _isActive = value;
+                if (_isActive)
+                {
+                    EntityID = EngineAPI.CreateGameEntity(this);
+                    Debug.Assert(ID.IsValid(_entityID));
+                }
+                else
+                {
+                    EngineAPI.RemoveGameEntity(this);
+                }
+                
+                OnPropertyChanged(nameof(IsActive));
+            }
+        }
+    }
+
+    
     private Boolean _isEnabled = true;
     [DataMember]
     public Boolean IsEnabled
@@ -69,6 +111,9 @@ class GameEntity : ViewModelBase
             OnPropertyChanged(nameof(Components));
         }
     }
+    
+    public Component GetComponent(Type type) => Components.FirstOrDefault(c => c.GetType() == type);
+    public T GetComponent<T>() where T : Component => GetComponent(typeof(T)) as T;
 }
 
 abstract class MSEntity : ViewModelBase
