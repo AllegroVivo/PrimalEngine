@@ -22,9 +22,9 @@ public partial class LoggerView : UserControl
         
         if (toggleInfo.IsChecked == true)
             filter |= (Int32)MessageType.Info;
-        if (toggleWarn.IsChecked == true)
+        if (toggleWarnings.IsChecked == true)
             filter |= (Int32)MessageType.Warning;
-        if (toggleError.IsChecked == true)
+        if (toggleErrors.IsChecked == true)
             filter |= (Int32)MessageType.Error;
 
         Logger.SetMessageFilter(filter);

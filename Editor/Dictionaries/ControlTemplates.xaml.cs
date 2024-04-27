@@ -50,4 +50,42 @@ public partial class ControlTemplates : ResourceDictionary
         Window window = (Window)((FrameworkElement)sender).TemplatedParent;
         window.WindowState = WindowState.Minimized;
     }
+
+    private void OnRenameTextBox_Keydown(Object sender, KeyEventArgs e)
+    {
+        TextBox textBox = sender as TextBox;
+        BindingExpression exp = textBox!.GetBindingExpression(TextBox.TextProperty);
+        
+        if (exp == null)
+            return;
+
+        if (e.Key == Key.Enter)
+        {
+            if (textBox.Tag is ICommand command && command.CanExecute(textBox.Text))
+                command.Execute(textBox.Text);
+            else
+                exp.UpdateSource();
+
+            textBox.Visibility = Visibility.Collapsed;
+            e.Handled = true;
+        }
+        else if (e.Key == Key.Escape)
+        {
+            exp.UpdateTarget();
+            textBox.Visibility = Visibility.Collapsed;
+        }
+    }
+
+    private void OnRenameTextBox_FocusLost(Object sender, RoutedEventArgs e)
+    {
+        TextBox textBox = sender as TextBox;
+        BindingExpression exp = textBox!.GetBindingExpression(TextBox.TextProperty);
+
+        if (exp != null)
+        {
+            exp.UpdateSource();
+            textBox.MoveFocus(new TraversalRequest(FocusNavigationDirection.Previous));
+            textBox.Visibility = Visibility.Collapsed;
+        }
+    }
 }
