@@ -52,6 +52,7 @@ public partial class GameEntityView : UserControl
 
     private void OnNameTextBox_GainFocus(Object sender, KeyboardFocusChangedEventArgs e)
     {
+        _propertyName = String.Empty;
         _undoAction = GetRenameAction();
     }
 

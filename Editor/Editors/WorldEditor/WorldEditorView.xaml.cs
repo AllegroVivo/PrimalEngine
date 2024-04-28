@@ -18,7 +18,6 @@ public partial class WorldEditorView : UserControl
     {
         Loaded -= OnWorldEditorViewLoaded;
         Focus();
-        ((INotifyCollectionChanged)Project.UndoRedo.UndoList).CollectionChanged += (_, _) => Focus();
     }
 }
 

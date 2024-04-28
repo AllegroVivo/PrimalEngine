@@ -62,6 +62,7 @@ class NumberBox : Control
         e.Handled = true;
 
         _mouseXStart = e.GetPosition(this).X;
+        Focus();
     }
 
     private void OnTextBlock_MouseLBU(Object sender, MouseButtonEventArgs e)

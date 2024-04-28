@@ -79,12 +79,14 @@ public partial class ControlTemplates : ResourceDictionary
     private void OnRenameTextBox_FocusLost(Object sender, RoutedEventArgs e)
     {
         TextBox textBox = sender as TextBox;
+        if (!textBox!.IsVisible)
+            return;
+        
         BindingExpression exp = textBox!.GetBindingExpression(TextBox.TextProperty);
 
         if (exp != null)
         {
             exp.UpdateSource();
-            textBox.MoveFocus(new TraversalRequest(FocusNavigationDirection.Previous));
             textBox.Visibility = Visibility.Collapsed;
         }
     }

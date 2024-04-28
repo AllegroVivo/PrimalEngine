@@ -45,9 +45,10 @@ class GameEntity : ViewModelBase
                     EntityID = EngineAPI.CreateGameEntity(this);
                     Debug.Assert(ID.IsValid(_entityID));
                 }
-                else
+                else if (ID.IsValid(EntityID))
                 {
                     EngineAPI.RemoveGameEntity(this);
+                    EntityID = ID.INVALID_ID;
                 }
                 
                 OnPropertyChanged(nameof(IsActive));
@@ -180,6 +181,7 @@ abstract class MSEntity : ViewModelBase
     {
         _enableUpdates = false;
         UpdateMSGameEntity();
+        MakeComponentList();
         _enableUpdates = true;
     }
 
@@ -191,44 +193,43 @@ abstract class MSEntity : ViewModelBase
         return true;
     }
 
-    public static Single? GetMixedValue(List<GameEntity> entities, Func<GameEntity, Single> getProperty)
+    public static Single? GetMixedValue<T>(List<T> objects, Func<T, Single> getProperty)
     {
-        Single value = getProperty(entities.First());
-        
-        foreach (GameEntity entity in entities.Skip(1))
-        {
-            if (!value.IsTheSameAs(getProperty(entity)))
-                return null;
-        }
-
-        return value;
+        Single value = getProperty(objects.First());
+        return objects.Skip(1).Any(x => !getProperty(x).IsTheSameAs(value)) ? null : value;
     }
 
-    public static Boolean? GetMixedValue(List<GameEntity> entities, Func<GameEntity, Boolean> getProperty)
+    public static Boolean? GetMixedValue<T>(List<T> objects, Func<T, Boolean> getProperty)
     {
-        Boolean value = getProperty(entities.First());
-        
-        foreach (GameEntity entity in entities.Skip(1))
-        {
-            if (value != getProperty(entity))
-                return null;
-        }
-
-        return value;
+        Boolean value = getProperty(objects.First());
+        return objects.Skip(1).Any(x => value != getProperty(x)) ? null : value;
     }
 
-    public static String GetMixedValue(List<GameEntity> entities, Func<GameEntity, String> getProperty)
+    public static String GetMixedValue<T>(List<T> objects, Func<T, String> getProperty)
     {
-        String value = getProperty(entities.First());
-        
-        foreach (GameEntity entity in entities.Skip(1))
-        {
-            if (value != getProperty(entity))
-                return null;
-        }
-
-        return value;
+        String value = getProperty(objects.First());
+        return objects.Skip(1).Any(x => value != getProperty(x)) ? null : value;
     }
+
+    private void MakeComponentList()
+    {
+        _components.Clear();
+        GameEntity firstEntity = SelectedEntities.FirstOrDefault();
+        if (firstEntity == null)
+            return;
+
+        foreach (Component component in firstEntity.Components)
+        {
+            Type type = component.GetType();
+            if (SelectedEntities.Skip(1).All(entity => entity.GetComponent(type) != null))
+            {
+                Debug.Assert(Components.FirstOrDefault(x => x.GetType() == type) == null);
+                _components.Add(component.GetMultiselectionComponent(this));
+            }
+        }
+    }
+    
+    public T GetMSComponent<T>() where T : IMSComponent => (T)Components.FirstOrDefault(x => x.GetType() == typeof(T));
 }
 
 class MSGameEntity : MSEntity
