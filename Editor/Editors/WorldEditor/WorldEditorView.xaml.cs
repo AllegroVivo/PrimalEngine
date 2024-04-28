@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
+using Editor.GameDev;
 using Editor.GameProject;
 
 namespace Editor.Editors;
@@ -18,6 +19,11 @@ public partial class WorldEditorView : UserControl
     {
         Loaded -= OnWorldEditorViewLoaded;
         Focus();
+    }
+
+    private void OnNewScriptButton_Click(Object sender, RoutedEventArgs e)
+    {
+        new NewScriptDialog().ShowDialog();
     }
 }
 

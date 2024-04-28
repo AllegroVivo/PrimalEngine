@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Editor.GameProject;
+using Path = System.IO.Path;
 
 namespace Editor
 {
@@ -22,11 +24,20 @@ namespace Editor
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static String PrimalPath { get; private set; } = @"D:\PrimalEngine";
+        
         public MainWindow()
         {
             InitializeComponent();
             Loaded += OnMainWindowLoaded;
             Closing += OnMainWindowClosing;
+        }
+        
+        private void OnMainWindowLoaded(Object sender, RoutedEventArgs e)
+        {
+            Loaded -= OnMainWindowLoaded;
+            GetEnginePath();
+            OpenProjectBrowserDialog();
         }
 
         private void OnMainWindowClosing(Object sender, CancelEventArgs e)
@@ -35,10 +46,26 @@ namespace Editor
             Project.Current?.Unload();
         }
 
-        private void OnMainWindowLoaded(Object sender, RoutedEventArgs e)
+        private void GetEnginePath()
         {
-            Loaded -= OnMainWindowLoaded;
-            OpenProjectBrowserDialog();
+            String enginePath = Environment.GetEnvironmentVariable("PRIMAL_ENGINE_PATH", EnvironmentVariableTarget.User);
+            if (enginePath == null || !Directory.Exists(Path.Combine(enginePath, @"Engine\EngineAPI")))
+            {
+                EnginePathDialog dlg = new();
+                if (dlg.ShowDialog() == true)
+                {
+                    PrimalPath = dlg.PrimalPath;
+                    Environment.SetEnvironmentVariable("PRIMAL_ENGINE_PATH", PrimalPath.ToUpper(), EnvironmentVariableTarget.User);
+                }
+                else
+                {
+                    Application.Current.Shutdown();
+                }
+            }
+            else
+            {
+                PrimalPath = enginePath;
+            }
         }
 
         private void OpenProjectBrowserDialog()

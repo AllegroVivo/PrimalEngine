@@ -27,6 +27,7 @@ public class ProjectTemplate
     public String IconFilePath { get; set; }
     public String ScreenshotFilePath { get; set; }
     public String ProjectFilePath { get; set; }
+    public String TemplatePath { get; set; }
 }
 
 class NewProject : ViewModelBase
@@ -96,7 +97,6 @@ class NewProject : ViewModelBase
         }
     }
 
-
     public NewProject()
     {
         ProjectTemplates = new ReadOnlyObservableCollection<ProjectTemplate>(_projectTemplates);
@@ -107,11 +107,13 @@ class NewProject : ViewModelBase
             foreach (String file in templateFiles)
             {
                 ProjectTemplate template = Serializer.FromFile<ProjectTemplate>(file);
-                template.IconFilePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(file), "Icon.png"));
-                template.ScreenshotFilePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(file), "Screenshot.png"));
+                template.TemplatePath = Path.GetDirectoryName(file);
+                template.IconFilePath = Path.GetFullPath(Path.Combine(template.TemplatePath, "Icon.png"));
+                template.ScreenshotFilePath = Path.GetFullPath(Path.Combine(template.TemplatePath, "Screenshot.png"));
                 template.Icon = File.ReadAllBytes(template.IconFilePath);
                 template.Screenshot = File.ReadAllBytes(template.ScreenshotFilePath);
-                template.ProjectFilePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(file), template.ProjectFile));
+                template.ProjectFilePath = Path.GetFullPath(Path.Combine(template.TemplatePath, template.ProjectFile));
+                
                 _projectTemplates.Add(template);
             }
 
@@ -179,9 +181,11 @@ class NewProject : ViewModelBase
             File.Copy(template.ScreenshotFilePath, Path.GetFullPath(Path.Combine(dirInfo.FullName, "Screenshot.png")));
 
             String projectXml = File.ReadAllText(template.ProjectFilePath);
-            projectXml = String.Format(projectXml, ProjectName, ProjectPath);
+            projectXml = String.Format(projectXml, ProjectName, path);
             String projectPath = Path.GetFullPath(Path.Combine(path, $"{ProjectName}{Project.Extension}"));
             File.WriteAllText(projectPath, projectXml);
+
+            CreateMSVCSolution(template, path);
 
             return path;
         }
@@ -191,5 +195,28 @@ class NewProject : ViewModelBase
             Logger.Log(MessageType.Error, $"Failed to create {template.ProjectType}");
             throw;
         }
+    }
+
+    private void CreateMSVCSolution(ProjectTemplate template, String projectPath)
+    {
+        Debug.Assert(File.Exists(Path.Combine(template.TemplatePath, "MSVCSolution")));
+        Debug.Assert(File.Exists(Path.Combine(template.TemplatePath, "MSVCProject")));
+
+        String engineAPIPath = Path.Combine(MainWindow.PrimalPath, @"Engine\EngineAPI\");
+        Debug.Assert(Directory.Exists(engineAPIPath));
+
+        var _0 = ProjectName;
+        var _1 = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+        var _2 = engineAPIPath;
+        var _3 = MainWindow.PrimalPath;
+        
+        String solution = File.ReadAllText(Path.Combine(template.TemplatePath, "MSVCSolution"));
+        solution = String.Format(solution, _0, _1, "{" + Guid.NewGuid().ToString().ToUpper() + "}");
+        File.WriteAllText(Path.GetFullPath(Path.Combine(projectPath, $"{_0}.sln")), solution);
+        
+        String project = File.ReadAllText(Path.Combine(template.TemplatePath, "MSVCProject"));
+        project = String.Format(project, _0, _1, _2, _3);
+        File.WriteAllText(Path.GetFullPath(Path.Combine(projectPath, $@"GameCode\{_0}.vcxproj")), project);
+        
     }
 }

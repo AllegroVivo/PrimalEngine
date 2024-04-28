@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Windows;
 using System.Windows.Input;
+using Editor.GameDev;
 using Editor.Utilities;
 
 namespace Editor.GameProject;
@@ -19,7 +20,8 @@ class Project : ViewModelBase
     public String Name { get; private set; } = "New Project";
     [DataMember]
     public String Path { get; private set; }
-    public String FullPath => $@"{Path}{Name}\{Name}{Extension}";
+    public String FullPath => $@"{Path}{Name}{Extension}";
+    public String Solution => $@"{Path}{Name}.sln";
 
     public static Project Current => Application.Current.MainWindow!.DataContext as Project;
     public static UndoRedo UndoRedo { get; } = new();
@@ -59,6 +61,7 @@ class Project : ViewModelBase
 
     public void Unload()
     {
+        VisualStudio.CloseVisualStudio();
         UndoRedo.Reset();
     }
 
